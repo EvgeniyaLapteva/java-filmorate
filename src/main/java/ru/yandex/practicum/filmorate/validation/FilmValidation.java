@@ -4,19 +4,19 @@ import java.time.LocalDate;
 
 public class FilmValidation {
 
-    public boolean isNameIsEmpty(String name) {
-        return name.isBlank();
+    public static boolean isNameIsEmpty(String name) {
+        return name == null || name.isBlank();
     }
 
-    public boolean iSDescriptionNoMoreThan200Symbols(String description) {
+    public static boolean iSDescriptionIsInCorrect(String description) {
         return description.length() > 200;
     }
 
-    public boolean isReleaseDateIsBeforeFirstFilm(LocalDate releaseDate) {
+    public static boolean isReleaseDateIsBeforeFirstFilm(LocalDate releaseDate) {
         return releaseDate.isBefore(LocalDate.of(1895, 12, 28));
     }
 
-    public boolean isDurationLessThan0(long duration) {
+    public static boolean isDurationLessThan0(long duration) {
         return duration < 0;
     }
 }
