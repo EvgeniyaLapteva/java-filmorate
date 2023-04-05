@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
 
     private void validateUserById(int userId) {
         if (storage.getUserById(userId) == null) {
-            throw new ObjectNotFoundException("Пользователя с id=" + userId +" не существует");
+            throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
     }
 
