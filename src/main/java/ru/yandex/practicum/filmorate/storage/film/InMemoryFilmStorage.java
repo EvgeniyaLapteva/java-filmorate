@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -15,6 +13,7 @@ public class InMemoryFilmStorage implements  FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
     private int id = 0;
+
     private int generateId() {
         return ++id;
     }
