@@ -22,7 +22,7 @@ public class FilmServiceImpl implements FilmService {
 
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
-    private final static LocalDate FIRST_FILM_RELEASE = LocalDate.of(1895, 12, 28);
+    private static final LocalDate FIRST_FILM_RELEASE = LocalDate.of(1895, 12, 28);
 
     @Override
     public void addLike(int filmId, int userId) {
@@ -109,7 +109,7 @@ public class FilmServiceImpl implements FilmService {
 
     private void validateUserById(int userId) {
         if (userStorage.getUserById(userId) == null) {
-            throw new ObjectNotFoundException("Пользователя с id=" + userId +" не существует");
+            throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
     }
 }
