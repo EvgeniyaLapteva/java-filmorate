@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,7 +29,6 @@ public class FilmServiceImpl implements FilmService {
         validateUserById(userId);
         Set<Integer> likes = getLikesById(filmId);
         likes.add(userId);
-        filmStorage.getFilmById(filmId).setLikes(likes);
         log.info("Пользователь id={} поставил лайк фильму id={}", userId, filmId);
     }
 
@@ -40,13 +38,13 @@ public class FilmServiceImpl implements FilmService {
         validateUserById(userId);
         Set<Integer> likes = getLikesById(filmId);
         likes.remove(userId);
-        filmStorage.getFilmById(filmId).setLikes(likes);
         log.info("Пользователь id={} удалил лайк с фильма id={}", userId, filmId);
     }
 
     @Override
     public Film getFilmById(int filmId) {
         validateFilmById(filmId);
+        log.info("Получили фильм по id={}", filmId);
         return filmStorage.getFilmById(filmId);
     }
 
@@ -85,13 +83,7 @@ public class FilmServiceImpl implements FilmService {
     }
 
     private Set<Integer> getLikesById(int filmId) {
-        Set<Integer> filmsLikes;
-        if (filmStorage.getFilmById(filmId).getLikes() == null) {
-            filmsLikes = new HashSet<>();
-        } else {
-            filmsLikes = filmStorage.getFilmById(filmId).getLikes();
-        }
-        return filmsLikes;
+        return filmStorage.getFilmById(filmId).getLikes();
     }
 
     private void validation(Film film) {
@@ -103,12 +95,14 @@ public class FilmServiceImpl implements FilmService {
 
     private void validateFilmById(int filmId) {
         if (filmStorage.getFilmById(filmId) == null) {
+            log.error("Фильма с id={} не существует", filmId);
             throw new ObjectNotFoundException("Фильма с id=" + filmId + " не существует");
         }
     }
 
     private void validateUserById(int userId) {
         if (userStorage.getUserById(userId) == null) {
+            log.error("Пользователя с id={} не существует", userId);
             throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
     }

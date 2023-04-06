@@ -16,7 +16,6 @@ public class User {
     @NotNull
     @Email
     private final String email;
-    @NotNull
     @NotBlank
     private final String login;
     private String name;

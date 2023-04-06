@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,10 +26,8 @@ public class UserServiceImpl implements UserService {
         validateUserById(friendId);
         Set<Integer> userFriends = getUserFriendsIds(userId);
         userFriends.add(friendId);
-        storage.getUserById(userId).setFriendsIds(userFriends);
         Set<Integer> friendsOfFriend = getUserFriendsIds(friendId);
         friendsOfFriend.add(userId);
-        storage.getUserById(friendId).setFriendsIds(friendsOfFriend);
         log.info("Пользователи {} и {} добавились друг к другу в друзья", storage.getUserById(userId),
                 storage.getUserById(friendId));
     }
@@ -41,10 +38,8 @@ public class UserServiceImpl implements UserService {
         validateUserById(friendId);
         Set<Integer> userFriends = getUserFriendsIds(userId);
         userFriends.remove(friendId);
-        storage.getUserById(userId).setFriendsIds(userFriends);
         Set<Integer> friendsOfFriend = getUserFriendsIds(friendId);
         friendsOfFriend.remove(userId);
-        storage.getUserById(friendId).setFriendsIds(friendsOfFriend);
         log.info("Пользователи {} и {} удалены из друзей друг у друга", storage.getUserById(userId),
                 storage.getUserById(friendId));
     }
@@ -78,6 +73,7 @@ public class UserServiceImpl implements UserService {
                 commonFriends.add(storage.getUserById(commonFriendId));
             }
         }
+        log.info("Получили список общих друзей пользователей id={} и id={}", userId, friendId);
         return commonFriends;
     }
 
@@ -118,17 +114,12 @@ public class UserServiceImpl implements UserService {
 
     private void validateUserById(int userId) {
         if (storage.getUserById(userId) == null) {
+            log.error("Пользователя с id={} не существует", userId);
             throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
     }
 
     private Set<Integer> getUserFriendsIds(int userId) {
-        Set<Integer> userFriends;
-        if (storage.getUserById(userId).getFriendsIds() == null) {
-            userFriends = new HashSet<>();
-        } else {
-            userFriends = storage.getUserById(userId).getFriendsIds();
-        }
-        return userFriends;
+        return storage.getUserById(userId).getFriendsIds();
     }
 }
