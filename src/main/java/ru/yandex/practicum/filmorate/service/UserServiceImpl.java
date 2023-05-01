@@ -1,7 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -15,10 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserStorage storage;
+
+    public UserServiceImpl(@Qualifier("userDbStorage") UserStorage storage) {
+        this.storage = storage;
+    }
 
     @Override
     public void addFriend(int userId, int friendId) {
@@ -85,10 +89,25 @@ public class UserServiceImpl implements UserService {
         return createdUser;
     }
 
+//    @Override
+//    public User updateUser(User user) {
+//        if (storage.getUserById(user.getId()) == null) {
+//            log.error("Пользователя с id={} не существует", user.getId());
+//            throw new ObjectNotFoundException("Пользователя с id=" + user.getId() + " еще не существует");
+//        }
+//        validation(user);
+//        log.info("Обновили пользователя с id={}", user.getId());
+//        return storage.updateUser(user);
+//    }
+
     @Override
     public User updateUser(User user) {
-        if (storage.getUserById(user.getId()) == null) {
-            log.error("Пользователя с id={} не существует", user.getId());
+        try {
+            if (storage.getUserById(user.getId()) == null) {
+                log.error("Пользователя с id={} не существует", user.getId());
+                throw new ObjectNotFoundException("Пользователя с id=" + user.getId() + " еще не существует");
+            }
+        } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Пользователя с id=" + user.getId() + " еще не существует");
         }
         validation(user);
@@ -113,8 +132,12 @@ public class UserServiceImpl implements UserService {
     }
 
     private void validateUserById(int userId) {
-        if (storage.getUserById(userId) == null) {
-            log.error("Пользователя с id={} не существует", userId);
+        try {
+            if (storage.getUserById(userId) == null) {
+                log.error("Пользователя с id={} не существует", userId);
+                throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
+            }
+        } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
     }

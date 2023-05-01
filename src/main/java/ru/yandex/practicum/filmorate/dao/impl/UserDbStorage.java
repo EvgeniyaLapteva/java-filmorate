@@ -1,7 +1,6 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.dao.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -13,7 +12,6 @@ import java.sql.*;
 import java.util.List;
 
 @Repository
-@Primary
 @RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
 
@@ -63,6 +61,4 @@ public class UserDbStorage implements UserStorage {
                 .name(resultSet.getString("name"))
                 .birthday(resultSet.getDate("birthday").toLocalDate()).build();
     }
-
-
 }
