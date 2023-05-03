@@ -47,7 +47,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film film) {
         String sql = "update films set name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?" +
-                "where film_id = ?";
+                " where film_id = ?";
         if (jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId()) > 0) {
             deleteAllGenresFromFilm(film.getId());

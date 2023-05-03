@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.yandex.practicum.filmorate.dao.GenreDao;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.dao.MpaDao;
+import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,31 +19,31 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-class GenreDbStorageTest {
+class MpaDbStorageTest {
 
-    private final GenreDao genreDao;
+    private final MpaDao mpaDao;
 
     @Test
-    void shouldGetAllGenres() {
-        List<Genre> genres = genreDao.getAllGenres();
+    void shouldGetAllMpa() {
+        List<Mpa> allMpa = mpaDao.getAllMpa();
 
-        assertEquals(6, genres.size(), "Список жанров не совпадает с требуемым");
+        assertEquals(5, allMpa.size(), "Список Mpa не соответствует ожидаемому");
     }
 
     @Test
-    void shouldGetGenreById() {
-        Optional<Genre> genreOptional = Optional.ofNullable(genreDao.getGenreById(1));
+    void shouldGetMpaById() {
+        Optional<Mpa> mpaOptional = Optional.ofNullable(mpaDao.getMpaById(1));
 
-        assertThat(genreOptional)
+        assertThat(mpaOptional)
                 .isPresent()
-                .hasValueSatisfying(genre ->
-                        assertThat(genre).hasFieldOrPropertyWithValue("id", 1)
+                .hasValueSatisfying(mpa ->
+                        assertThat(mpa).hasFieldOrPropertyWithValue("id", 1)
                 );
 
-        assertThat(genreOptional)
+        assertThat(mpaOptional)
                 .isPresent()
-                .hasValueSatisfying(genre ->
-                        assertThat(genre).hasFieldOrPropertyWithValue("name", "Комедия")
+                .hasValueSatisfying(mpa ->
+                        assertThat(mpa).hasFieldOrPropertyWithValue("name", "G")
                 );
     }
 }
