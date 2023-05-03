@@ -50,8 +50,15 @@ public class DbFilmServiceImpl implements FilmService {
 
     @Override
     public Film getFilmById(int filmId) {
+        Film film;
+        try {
+             film = filmStorage.getFilmById(filmId);
+        } catch (EmptyResultDataAccessException e) {
+            log.debug("Фильм с id={} не найден", filmId);
+            throw new ObjectNotFoundException("Фильм с id = " + filmId + " не найден");
+        }
         log.info("Получили фильм по id={}", filmId);
-        return filmStorage.getFilmById(filmId);
+        return film;
     }
 
     @Override

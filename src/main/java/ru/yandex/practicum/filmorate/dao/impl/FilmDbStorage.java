@@ -80,18 +80,13 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilmById(int filmId) {
         String sql = "select f.*, m.name from films as f join mpa as m on f.mpa_id = m.mpa_id where f.film_id = ?";
-        try {
-            Film film = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapRowToFilm(rs), filmId);
-            if (film != null) {
-                Set<Genre> filmGenres = film.getGenres();
-                List<Genre> genresToAdd = genreDao.getGenreByFilmId(filmId);
-                filmGenres.addAll(genresToAdd);
-            }
-            return film;
-        } catch (EmptyResultDataAccessException e) {
-            log.debug("Фильм с id={} не найден", filmId);
-            throw new ObjectNotFoundException("Фильм с id = " + filmId + " не найден");
+        Film film = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapRowToFilm(rs), filmId);
+        if (film != null) {
+            Set<Genre> filmGenres = film.getGenres();
+            List<Genre> genresToAdd = genreDao.getGenreByFilmId(filmId);
+            filmGenres.addAll(genresToAdd);
         }
+        return film;
     }
 
     private void addGenreToFilm(int filmId, int genreId) {
