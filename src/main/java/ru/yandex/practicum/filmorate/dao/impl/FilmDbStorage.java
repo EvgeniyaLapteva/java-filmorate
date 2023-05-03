@@ -14,7 +14,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.*;
 import java.util.List;
-
+import java.util.Objects;
 
 
 @Repository
@@ -36,7 +36,7 @@ public class FilmDbStorage implements FilmStorage {
             ps.setInt(5, film.getMpa().getId());
             return ps;
         }, keyHolder);
-        film.setId(keyHolder.getKey().intValue());
+        film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         film.getFilmGenres().forEach(genre -> addGenreToFilm(film.getId(), genre.getId()));
         log.info("Фильм {} сохранен", film);
         return film;
