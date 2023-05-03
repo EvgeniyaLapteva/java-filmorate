@@ -53,7 +53,13 @@ public class FilmDbStorage implements FilmStorage {
         if (jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId()) > 0) {
             deleteAllGenresFromFilm(film.getId());
-            film.getGenres().forEach(genre -> addGenreToFilm(film.getId(), genre.getId()));
+            Set<Genre> genres = film.getGenres();
+            for (Genre genre : genres) {
+                addGenreToFilm(film.getId(), genre.getId());
+            }
+            genres.clear();
+            List<Genre> genresToAdd = genreDao.getGenreByFilmId(film.getId());
+            genres.addAll(genresToAdd);
             return film;
         }
         log.debug("Фильм с id={} не найден", film.getId());
@@ -67,8 +73,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film: films) {
             Set<Genre> filmGenres = film.getGenres();
             List<Genre> genresToAdd = genreDao.getGenreByFilmId(film.getId());
-            filmGenres.addAll(genresToAdd);
-            filmGenres.stream().collect(Collectors.toSet());
+            filmGenres.addAll(genresToAdd);;
         }
         return films;
     }
