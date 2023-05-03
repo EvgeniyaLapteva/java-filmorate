@@ -82,9 +82,11 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "select f.*, m.name from films as f join mpa as m on f.mpa_id = m.mpa_id where f.film_id = ?";
         try {
             Film film = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapRowToFilm(rs), filmId);
-            Set<Genre> filmGenres = film.getGenres();
-            List<Genre> genresToAdd = genreDao.getGenreByFilmId(filmId);
-            filmGenres.addAll(genresToAdd);
+            if (film != null) {
+                Set<Genre> filmGenres = film.getGenres();
+                List<Genre> genresToAdd = genreDao.getGenreByFilmId(filmId);
+                filmGenres.addAll(genresToAdd);
+            }
             return film;
         } catch (EmptyResultDataAccessException e) {
             log.debug("Фильм с id={} не найден", filmId);
