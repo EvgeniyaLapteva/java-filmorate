@@ -88,10 +88,6 @@ public class DbFilmServiceImpl implements FilmService {
         return filmStorage.getAllFilms();
     }
 
-    private List<Integer> getLikesById(int filmId) {
-        return likesStorage.getFilmsLikes(filmId);
-    }
-
     private void validation(Film film) {
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
             log.error("Дата релиза не может быть раньше {}", FIRST_FILM_RELEASE);
