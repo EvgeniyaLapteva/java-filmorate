@@ -9,7 +9,6 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -30,24 +29,4 @@ public class Film {
     @NotNull
     private Mpa mpa;
     private final Set<Genre> genres = new HashSet<>();
-
-    public void addLike(int id) {
-        likes.add(id);
-    }
-
-    public boolean deleteLike(int id) {
-        return likes.remove(id);
-    }
-
-    public void addGenre(Genre genre) {
-        genres.add(genre);
-    }
-
-    public boolean deleteGenre(Genre genre) {
-        return genres.remove(genre);
-    }
-
-//    public List<Genre> getFilmGenres() {
-//        return genres.stream().sorted(Comparator.comparingInt(Genre::getId)).collect(Collectors.toList());
-//    }
 }
