@@ -16,15 +16,15 @@ public class LikesDbStorage implements LikesDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public boolean addLikeToFilm(int filmId, int userId) {
+    public void addLikeToFilm(int filmId, int userId) {
         String sql = "insert into likes (film_id, user_id) values(?, ?)";
-        return jdbcTemplate.update(sql, filmId, userId) > 0;
+        jdbcTemplate.update(sql, filmId, userId);
     }
 
     @Override
-    public boolean deleteLikeFromFilm(int filmId, int userId) {
-        String sql = "delete from likes where film_id = ? and user_id = ?";
-        return  jdbcTemplate.update(sql, filmId, userId) > 0;
+    public void deleteLikeFromFilm(int filmId, int userId) {
+        String sql = "delete from likes where (film_id = ? and user_id = ?)";
+        jdbcTemplate.update(sql, filmId, userId);
     }
 
     @Override

@@ -83,9 +83,9 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.update(sql, filmId, genreId) > 0;
     }
 
-    private boolean deleteAllGenresFromFilm(int filmId) {
+    private void deleteAllGenresFromFilm(int filmId) {
         String sql = "delete from film_genre where film_id = ?";
-        return jdbcTemplate.update(sql, filmId) > 0;
+        jdbcTemplate.update(sql, filmId);
     }
 
     private Film mapRowToFilm(ResultSet rs) throws SQLException {

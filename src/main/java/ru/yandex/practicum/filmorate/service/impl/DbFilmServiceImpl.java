@@ -42,6 +42,8 @@ public class DbFilmServiceImpl implements FilmService {
 
     @Override
     public void deleteLike(int filmId, int userId) {
+        validateFilmById(filmId);
+        validateUserById(userId);
         log.info("Пользователь id={} удалил лайк с фильма id={}", userId, filmId);
         likesStorage.deleteLikeFromFilm(filmId, userId);
     }
