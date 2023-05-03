@@ -72,7 +72,7 @@ public class FilmDbStorage implements FilmStorage {
         for (Film film: films) {
             Set<Genre> filmGenres = film.getGenres();
             List<Genre> genresToAdd = genreDao.getGenreByFilmId(film.getId());
-            filmGenres.addAll(genresToAdd);;
+            filmGenres.addAll(genresToAdd);
         }
         return films;
     }
@@ -95,11 +95,6 @@ public class FilmDbStorage implements FilmStorage {
     private void addGenreToFilm(int filmId, int genreId) {
         String sql = "insert into film_genre (film_id, genre_id) values(?, ?)";
         jdbcTemplate.update(sql, filmId, genreId);
-    }
-
-    private boolean deleteGenreFromFilm(int filmId, int genreId) {
-        String sql = "delete from film_genre where film_id = ? and genre_id = ?";
-        return jdbcTemplate.update(sql, filmId, genreId) > 0;
     }
 
     private void deleteAllGenresFromFilm(int filmId) {
