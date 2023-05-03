@@ -20,8 +20,8 @@ public class GenreDbStorage implements GenreDao {
     public List<Genre> getAllGenres() {
         String sql = "select * from genres";
         List<Genre> allGenres = jdbcTemplate.query(sql, (rs, rowNum) -> Genre.builder()
-                .genreId(rs.getInt("genre_id")).name(rs.getString("name")).build());
-        return allGenres.stream().sorted(Comparator.comparingInt(Genre::getGenreId))
+                .id(rs.getInt("genre_id")).name(rs.getString("name")).build());
+        return allGenres.stream().sorted(Comparator.comparingInt(Genre::getId))
                 .collect(Collectors.toList());
     }
 
@@ -29,6 +29,6 @@ public class GenreDbStorage implements GenreDao {
     public Genre getGenreById(int genreId) {
         String sql = "select * from genres where genre_id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> Genre.builder()
-                .genreId(rs.getInt("genre_id")).name(rs.getString("name")).build(), genreId);
+                .id(rs.getInt("genre_id")).name(rs.getString("name")).build(), genreId);
     }
 }

@@ -19,9 +19,9 @@ public class MpaDbStorage implements MpaDao {
     @Override
     public List<Mpa> getAllMpa() {
         String sql = "select * from mpa";
-        List<Mpa> allMpa = jdbcTemplate.query(sql, (rs, rowNum) -> Mpa.builder().mpaId(rs.getInt("mpa_id"))
+        List<Mpa> allMpa = jdbcTemplate.query(sql, (rs, rowNum) -> Mpa.builder().id(rs.getInt("mpa_id"))
                 .name(rs.getString("name")).build());
-        return allMpa.stream().sorted(Comparator.comparingInt(Mpa::getMpaId))
+        return allMpa.stream().sorted(Comparator.comparingInt(Mpa::getId))
                 .collect(Collectors.toList());
     }
 
@@ -29,6 +29,6 @@ public class MpaDbStorage implements MpaDao {
     public Mpa getMpaById(int mpaId) {
         String sql = "select * from mpa where mpa_id = ?";
         return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> Mpa.builder()
-                .mpaId(rs.getInt("mpa_id")).name(rs.getString("name")).build(), mpaId);
+                .id(rs.getInt("mpa_id")).name(rs.getString("name")).build(), mpaId);
     }
 }

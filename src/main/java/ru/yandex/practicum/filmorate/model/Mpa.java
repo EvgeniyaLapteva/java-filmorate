@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class Mpa {
-    private int mpaId;
+    private int id;
     private final String name;
 }
