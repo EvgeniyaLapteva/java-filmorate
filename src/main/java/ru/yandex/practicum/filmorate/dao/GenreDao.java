@@ -9,4 +9,6 @@ public interface GenreDao {
     List<Genre> getAllGenres();
 
     Genre getGenreById(int genreId);
+
+    List<Genre> getGenreByFilmId(int filmId);
 }

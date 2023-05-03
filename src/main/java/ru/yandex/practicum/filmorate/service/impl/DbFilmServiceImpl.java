@@ -13,7 +13,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,35 +38,18 @@ public class DbFilmServiceImpl implements FilmService {
     public void addLike(int filmId, int userId) {
         validateFilmById(filmId);
         validateUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        Set<Integer> likes = likesStorage.getFilmsLikes(filmId);
-        likes.add(userId);
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-        }
-        film.setLikes(likes);
         log.info("Пользователь id={} поставил лайк фильму id={}", userId, filmId);
-        filmStorage.updateFilm(film);
+        likesStorage.addLikeToFilm(filmId, userId);
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
-        validateFilmById(filmId);
-        validateUserById(userId);
-        Film film = filmStorage.getFilmById(filmId);
-        if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
-        }
-        likesStorage.deleteLikeFromFilm(filmId, userId);
-        Set<Integer> likes = likesStorage.getFilmsLikes(filmId);
-        film.setLikes(likes);
-        filmStorage.updateFilm(film);
         log.info("Пользователь id={} удалил лайк с фильма id={}", userId, filmId);
+        likesStorage.deleteLikeFromFilm(filmId, userId);
     }
 
     @Override
     public Film getFilmById(int filmId) {
-        validateFilmById(filmId);
         log.info("Получили фильм по id={}", filmId);
         return filmStorage.getFilmById(filmId);
     }
@@ -75,10 +57,7 @@ public class DbFilmServiceImpl implements FilmService {
     @Override
     public List<Film> getPopularFilm(int count) {
         log.info("Получили список самых популярных фильмов");
-        return filmStorage.getAllFilms().stream()
-                .sorted((f1, f2) -> f2.getLikes().size() - f1.getLikes().size())
-                .limit(count)
-                .collect(Collectors.toList());
+        return likesStorage.getPopularFilm(count);
     }
 
     @Override
@@ -91,7 +70,6 @@ public class DbFilmServiceImpl implements FilmService {
 
     @Override
     public Film updateFilm(Film film) {
-        validateFilmById(film.getId());
         validation(film);
         log.info("Обновлен фильм: {}", film);
         return filmStorage.updateFilm(film);
@@ -103,8 +81,8 @@ public class DbFilmServiceImpl implements FilmService {
         return filmStorage.getAllFilms();
     }
 
-    private Set<Integer> getLikesById(int filmId) {
-        return filmStorage.getFilmById(filmId).getLikes();
+    private List<Integer> getLikesById(int filmId) {
+        return likesStorage.getFilmsLikes(filmId);
     }
 
     private void validation(Film film) {
@@ -126,8 +104,12 @@ public class DbFilmServiceImpl implements FilmService {
     }
 
     private void validateUserById(int userId) {
-        if (userStorage.getUserById(userId) == null) {
-            log.error("Пользователя с id={} не существует", userId);
+        try {
+            if (userStorage.getUserById(userId) == null) {
+                log.error("Пользователя с id={} не существует", userId);
+                throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
+            }
+        } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
     }

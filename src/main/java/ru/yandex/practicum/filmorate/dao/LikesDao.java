@@ -1,11 +1,15 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import java.util.Set;
+import ru.yandex.practicum.filmorate.model.Film;
+
+import java.util.List;
 
 public interface LikesDao {
-    void addLikeToFilm(int filmId, int userId);
+    boolean addLikeToFilm(int filmId, int userId);
 
-    void deleteLikeFromFilm(int filmId, int userId);
+    boolean deleteLikeFromFilm(int filmId, int userId);
 
-    Set<Integer> getFilmsLikes(int filmId);
+    List<Integer> getFilmsLikes(int filmId);
+
+    List<Film> getPopularFilm(int count);
 }
