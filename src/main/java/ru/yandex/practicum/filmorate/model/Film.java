@@ -8,10 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -50,7 +47,7 @@ public class Film {
         return genres.remove(genre);
     }
 
-    public List<Genre> getFilmGenres() {
-        return genres.stream().sorted(Comparator.comparingInt(Genre::getId)).collect(Collectors.toList());
-    }
+//    public List<Genre> getFilmGenres() {
+//        return genres.stream().sorted(Comparator.comparingInt(Genre::getId)).collect(Collectors.toList());
+//    }
 }

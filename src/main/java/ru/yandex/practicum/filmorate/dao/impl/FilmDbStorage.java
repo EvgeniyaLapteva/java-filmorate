@@ -7,14 +7,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.sql.*;
-import java.util.List;
-import java.util.Objects;
+import java.sql.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Repository
@@ -23,6 +26,7 @@ import java.util.Objects;
 public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final GenreDao genreDao;
     @Override
     public Film createFilm(Film film) {
         String sql = "insert into films (name, description, release_date, duration, mpa_id) values(?, ?, ?, ?, ?)";
@@ -37,7 +41,7 @@ public class FilmDbStorage implements FilmStorage {
             return ps;
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
-        film.getFilmGenres().forEach(genre -> addGenreToFilm(film.getId(), genre.getId()));
+        film.getGenres().forEach(genre -> addGenreToFilm(film.getId(), genre.getId()));
         log.info("Фильм {} сохранен", film);
         return film;
     }
@@ -49,7 +53,7 @@ public class FilmDbStorage implements FilmStorage {
         if (jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
                 film.getDuration(), film.getMpa().getId(), film.getId()) > 0) {
             deleteAllGenresFromFilm(film.getId());
-            film.getFilmGenres().forEach(genre -> addGenreToFilm(film.getId(), genre.getId()));
+            film.getGenres().forEach(genre -> addGenreToFilm(film.getId(), genre.getId()));
             return film;
         }
         log.debug("Фильм с id={} не найден", film.getId());
@@ -58,15 +62,26 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getAllFilms() {
-        String queryForAllFilms = "select f.*, m.name from films as f join mpa as m on f.mpa_id = m.mpa_id";
-        return jdbcTemplate.query(queryForAllFilms, (rs, rowNum) -> mapRowToFilm(rs));
+        String sql = "select f.*, m.name from films as f join mpa as m on f.mpa_id = m.mpa_id";
+        List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> mapRowToFilm(rs));
+        for (Film film: films) {
+            Set<Genre> filmGenres = film.getGenres();
+            List<Genre> genresToAdd = genreDao.getGenreByFilmId(film.getId());
+            filmGenres.addAll(genresToAdd);
+            filmGenres.stream().collect(Collectors.toSet());
+        }
+        return films;
     }
 
     @Override
     public Film getFilmById(int filmId) {
         String sql = "select f.*, m.name from films as f join mpa as m on f.mpa_id = m.mpa_id where f.film_id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapRowToFilm(rs), filmId);
+            Film film = jdbcTemplate.queryForObject(sql, (rs, rowNum) -> mapRowToFilm(rs), filmId);
+            Set<Genre> filmGenres = film.getGenres();
+            List<Genre> genresToAdd = genreDao.getGenreByFilmId(filmId);
+            filmGenres.addAll(genresToAdd);
+            return film;
         } catch (EmptyResultDataAccessException e) {
             log.debug("Фильм с id={} не найден", filmId);
             throw new ObjectNotFoundException("Фильм с id = " + filmId + " не найден");
