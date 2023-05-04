@@ -107,7 +107,7 @@ class FilmDbStorageTest {
     void shouldCreateFilmWithMpa() {
         Film testFilm = createTestFilm();
         filmStorage.createFilm(testFilm);
-        Mpa mpa =mpaDao.getMpaById(1);
+        Mpa mpa = mpaDao.getMpaById(1);
 
         Optional<Film> filmOptional = Optional.ofNullable(filmStorage.getFilmById(1));
 
