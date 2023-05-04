@@ -34,7 +34,6 @@ public class UserDbStorage implements UserStorage {
         return user;
     }
 
-
     @Override
     public User updateUser(User user) {
         String sql = "update users set email=?, login=?, name=?, birthday=? where user_id=?";

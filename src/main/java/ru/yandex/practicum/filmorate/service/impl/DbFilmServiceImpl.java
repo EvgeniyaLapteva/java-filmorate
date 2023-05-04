@@ -22,6 +22,7 @@ public class DbFilmServiceImpl implements FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final LikesDbStorage likesStorage;
+    private static final LocalDate FIRST_FILM_RELEASE = LocalDate.of(1895, 12, 28);
 
     public DbFilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                              @Qualifier("userDbStorage") UserStorage userStorage, LikesDbStorage likesStorage) {
@@ -29,8 +30,6 @@ public class DbFilmServiceImpl implements FilmService {
         this.userStorage = userStorage;
         this.likesStorage = likesStorage;
     }
-
-    private static final LocalDate FIRST_FILM_RELEASE = LocalDate.of(1895, 12, 28);
 
     @Override
     public void addLike(int filmId, int userId) {
