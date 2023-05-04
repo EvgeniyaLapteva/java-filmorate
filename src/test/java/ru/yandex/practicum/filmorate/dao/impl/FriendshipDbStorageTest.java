@@ -74,6 +74,7 @@ class FriendshipDbStorageTest {
         return User.builder().id(1).email("email@mail.ru").login("login").name("name")
                 .birthday(LocalDate.of(1989, 7, 7)).build();
     }
+
     private User createSecondUser() {
         return User.builder().id(2).email("second@mail.ru").login("loginSecond").name("nameNew")
                 .birthday(LocalDate.of(2000, 5, 5)).build();
