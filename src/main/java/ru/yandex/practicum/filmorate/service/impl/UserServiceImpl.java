@@ -116,6 +116,7 @@ public class UserServiceImpl implements UserService {
             user.setName(user.getLogin());
         }
     }
+
     private void validateUserById(int userId) {
         if (storage.getUserById(userId) == null) {
             log.error("Пользователя с id={} не существует", userId);
@@ -123,6 +124,7 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
     private Set<Integer> getUserFriendsIds(int userId) {
         return storage.getUserById(userId).getFriendsIds();
     }
