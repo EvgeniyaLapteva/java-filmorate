@@ -7,5 +7,6 @@ import java.util.List;
 public interface MpaDao {
 
     List<Mpa> getAllMpa();
+
     Mpa getMpaById(int mpaId);
 }
