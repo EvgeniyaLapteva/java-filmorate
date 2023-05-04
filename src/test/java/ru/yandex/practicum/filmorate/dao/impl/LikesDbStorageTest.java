@@ -68,7 +68,7 @@ class LikesDbStorageTest {
         likesDao.addLikeToFilm(2, 1);
         likesDao.addLikeToFilm(2, 2);
 
-        List<Film> popularFilms =likesDao.getPopularFilm(10);
+        List<Film> popularFilms = likesDao.getPopularFilm(10);
 
         List<Film> testList = new ArrayList<>();
         testList.add(testFilm2);
