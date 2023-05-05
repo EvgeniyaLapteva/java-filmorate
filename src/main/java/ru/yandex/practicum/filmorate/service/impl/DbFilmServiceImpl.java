@@ -76,7 +76,7 @@ public class DbFilmServiceImpl implements FilmService {
 
     @Override
     public Film updateFilm(Film film) {
-        validation(film);
+        validateFilmById(film.getId());
         log.info("Обновлен фильм: {}", film);
         return filmStorage.updateFilm(film);
     }
@@ -91,6 +91,16 @@ public class DbFilmServiceImpl implements FilmService {
         if (film.getReleaseDate().isBefore(FIRST_FILM_RELEASE)) {
             log.error("Дата релиза не может быть раньше {}", FIRST_FILM_RELEASE);
             throw new ValidationException("Дата релиза должна быть не раньше " + FIRST_FILM_RELEASE);
+        }
+        List<Film> filmsFromDB = filmStorage.getAllFilms();
+        for (Film film1 : filmsFromDB) {
+            if (film.getName().equals(film1.getName()) && film.getReleaseDate().equals(film1.getReleaseDate())
+                    && film.getDuration() == film1.getDuration()) {
+                log.error("Фильм с name={}, releaseDate={}, duration={}, уже существует", film.getName(),
+                        film.getReleaseDate(), film.getDuration());
+                throw new ValidationException("Фильм с name=" + film.getName() + ", releaseDate=" +
+                        film.getReleaseDate() + ", duration= " + film.getDuration() + ", уже существует");
+            }
         }
     }
 
