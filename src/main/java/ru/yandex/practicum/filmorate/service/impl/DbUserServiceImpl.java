@@ -100,6 +100,17 @@ public class DbUserServiceImpl implements UserService {
         if (user.getName() == null || user.getName().equals("")) {
             user.setName(user.getLogin());
         }
+        List<User> usersFromDB = storage.getAllUsers();
+        for (User user1 : usersFromDB) {
+            if (user1.getEmail().equals(user.getEmail())) {
+                log.error("Пользователь с email = {} уже существует", user.getEmail());
+                throw new ValidationException("Пользователь с email = " + user.getEmail() + " уже существует");
+            }
+            if (user1.getLogin().equals(user.getLogin())) {
+                log.error("Пользователь с login = {} уже существует", user.getLogin());
+                throw new ValidationException("Пользователь с login = " + user.getLogin() + " уже существует");
+            }
+        }
     }
 
     private void validateUserById(int userId) {
