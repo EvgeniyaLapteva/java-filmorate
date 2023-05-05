@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,9 +29,11 @@ public class DbUserServiceImpl implements UserService {
 
     @Override
     public void addFriend(int userId, int friendId) {
-        getUserById(userId);
+        User user = getUserById(userId);
         getUserById(friendId);
         friendshipDao.addFriend(userId, friendId);
+        Set<Integer> friends = user.getFriendsIds();
+        friends.add(friendId);
         log.info("Пользователи id = {} и id = {} добавились друг к другу в друзья", userId, friendId);
     }
 
@@ -45,6 +48,10 @@ public class DbUserServiceImpl implements UserService {
     @Override
     public User getUserById(int userId) {
         validateUserById(userId);
+        User user = storage.getUserById(userId);
+        Set<Integer> friendsOfUser = user.getFriendsIds();
+        friendsOfUser.addAll(friendshipDao.getAllFriendsById(userId).stream().map(User::getId)
+                .collect(Collectors.toSet()));
         log.info("Нашли пользователя с id = {}", userId);
         return storage.getUserById(userId);
     }
@@ -88,6 +95,7 @@ public class DbUserServiceImpl implements UserService {
                 } catch (EmptyResultDataAccessException e) {
                     throw new ObjectNotFoundException("Пользователя с id=" + friendId + " не существует");
                 }
+                friendsOfUser.add(friendId);
             }
         } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Пользователя с id=" + user.getId() + " еще не существует");
