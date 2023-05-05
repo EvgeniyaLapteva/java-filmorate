@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -77,6 +78,16 @@ public class DbUserServiceImpl implements UserService {
             if (storage.getUserById(user.getId()) == null) {
                 log.error("Пользователя с id={} не существует", user.getId());
                 throw new ObjectNotFoundException("Пользователя с id=" + user.getId() + " еще не существует");
+            }
+            Set<Integer> friendsOfUser = user.getFriendsIds();
+            for (Integer friendId : friendsOfUser) {
+                try {
+                    if (storage.getUserById(friendId) == null) {
+                        log.error("Пользователя с id={} не существует", friendId);
+                    }
+                } catch (EmptyResultDataAccessException e) {
+                    throw new ObjectNotFoundException("Пользователя с id=" + friendId + " не существует");
+                }
             }
         } catch (EmptyResultDataAccessException e) {
             throw new ObjectNotFoundException("Пользователя с id=" + user.getId() + " еще не существует");
