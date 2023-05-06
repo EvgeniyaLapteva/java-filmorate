@@ -126,7 +126,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private void validateMpa(int mpaId) {
-        if (mpaId <=0 || mpaId > 5) {
+        if (mpaId <= 0 || mpaId > 5) {
             log.error("Неорректно переданны данные по Mpa");
             throw new ObjectNotFoundException("Неорректно переданы данные по Mpa");
         }
