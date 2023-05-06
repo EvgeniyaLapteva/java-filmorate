@@ -13,4 +13,6 @@ public interface FriendshipDao {
     List<User> getAllFriendsById(int userId);
 
     List<User> getCommonFriends(int userId, int friendId);
+
+    void updateFriendship(int userId, int friendId, boolean status);
 }

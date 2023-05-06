@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
+import ru.yandex.practicum.filmorate.dao.LikesDao;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -25,9 +26,14 @@ public class FilmDbStorage implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
     private final GenreDao genreDao;
+    private final LikesDao likesDao;
 
     @Override
     public Film createFilm(Film film) {
+        validateMpa(film.getMpa().getId());
+        for (Genre genre : film.getGenres()) {
+            validateGenre(genre.getId());
+        }
         String sql = "insert into films (name, description, release_date, duration, mpa_id) values(?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -47,6 +53,10 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film updateFilm(Film film) {
+        validateMpa(film.getMpa().getId());
+        for (Genre genre : film.getGenres()) {
+            validateGenre(genre.getId());
+        }
         String sql = "update films set name = ?, description = ?, release_date = ?, duration = ?, mpa_id = ?" +
                 " where film_id = ?";
         if (jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(),
@@ -73,6 +83,9 @@ public class FilmDbStorage implements FilmStorage {
             Set<Genre> filmGenres = film.getGenres();
             List<Genre> genresToAdd = genreDao.getGenreByFilmId(film.getId());
             filmGenres.addAll(genresToAdd);
+            Set<Integer> likes = film.getLikes();
+            List<Integer> likesFromDB = likesDao.getFilmsLikes(film.getId());
+            likes.addAll(likesFromDB);
         }
         return films;
     }
@@ -85,6 +98,9 @@ public class FilmDbStorage implements FilmStorage {
             Set<Genre> filmGenres = film.getGenres();
             List<Genre> genresToAdd = genreDao.getGenreByFilmId(filmId);
             filmGenres.addAll(genresToAdd);
+            Set<Integer> likes = film.getLikes();
+            List<Integer> likesFromDB = likesDao.getFilmsLikes(filmId);
+            likes.addAll(likesFromDB);
         }
         return film;
     }
@@ -107,5 +123,19 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(rs.getInt("duration"))
                 .mpa(Mpa.builder().id(rs.getInt("mpa_id"))
                         .name(rs.getString("mpa.name")).build()).build();
+    }
+
+    private void validateMpa(int mpaId) {
+        if (mpaId <=0 || mpaId > 5) {
+            log.error("Неорректно переданны данные по Mpa");
+            throw new ObjectNotFoundException("Неорректно переданы данные по Mpa");
+        }
+    }
+
+    private void validateGenre(int genreId) {
+        if (genreId <= 0 || genreId > 6) {
+            log.error("Неорректно переданны данные по жанру");
+            throw new ObjectNotFoundException("Неорректно переданы данные по жанру");
+        }
     }
 }

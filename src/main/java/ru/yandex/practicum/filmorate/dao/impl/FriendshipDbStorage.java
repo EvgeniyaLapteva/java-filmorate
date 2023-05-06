@@ -32,6 +32,12 @@ public class FriendshipDbStorage implements FriendshipDao {
     }
 
     @Override
+    public void updateFriendship(int userId, int friendId, boolean status) {
+        String sql = "update friendship set status = ? where user_id = ? and friend_id = ?";
+        jdbcTemplate.update(sql, status, userId, friendId);
+    }
+
+    @Override
     public void deleteFriend(int userId, int friendId) {
         String sql = "delete from friendship where user_id = ? and friend_id = ?";
         jdbcTemplate.update(sql, userId, friendId);
@@ -40,13 +46,12 @@ public class FriendshipDbStorage implements FriendshipDao {
     @Override
     public List<User> getAllFriendsById(int userId) {
         String sql = "select * from users where user_id in (select friend_id from friendship where user_id = ?)";
-        List<User> friends = jdbcTemplate.query(sql, (rs, rowNum) -> User.builder()
+        return jdbcTemplate.query(sql, (rs, rowNum) -> User.builder()
                 .id(rs.getInt("user_id"))
                 .email(rs.getString("email"))
                 .login(rs.getString("login"))
                 .name(rs.getString("name"))
                 .birthday(rs.getDate("birthday").toLocalDate()).build(), userId);
-        return friends;
     }
 
     @Override

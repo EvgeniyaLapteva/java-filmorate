@@ -28,7 +28,6 @@ public class LikesDbStorage implements LikesDao {
             log.error("Пользователь id = {} уже поставил лайк фильму id = {}", userId, filmId);
             throw new ValidationException("Пользователь id = " + userId + " уже поставил лайк фильму id = " + filmId);
         }
-
     }
 
     @Override
