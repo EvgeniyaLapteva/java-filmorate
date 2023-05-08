@@ -1,11 +1,12 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -15,10 +16,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserStorage storage;
+
+    public UserServiceImpl(@Qualifier("inMemoryUserStorage") UserStorage storage) {
+        this.storage = storage;
+    }
 
     @Override
     public void addFriend(int userId, int friendId) {
@@ -96,6 +100,7 @@ public class UserServiceImpl implements UserService {
         return storage.updateUser(user);
     }
 
+
     @Override
     public List<User> getAllUsers() {
         log.info("На данный момент сохранено пользователей: {}", storage.getAllUsers().size());
@@ -117,6 +122,7 @@ public class UserServiceImpl implements UserService {
             log.error("Пользователя с id={} не существует", userId);
             throw new ObjectNotFoundException("Пользователя с id=" + userId + " не существует");
         }
+
     }
 
     private Set<Integer> getUserFriendsIds(int userId) {
